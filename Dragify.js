@@ -70,30 +70,48 @@
             var that = this
 
             that.$elem.addEventListener(EVENTS[0], function (e) {
-                var eInfo = that._getEventInfo(e)
-                var diffX = eInfo.clientX - that.$elem.offsetLeft
-                var diffY = eInfo.clientY - that.$elem.offsetTop
+                var eInfo        = that._getEventInfo(e)
+                var $parent      = that.$elem.offsetParent
+                var diffX        = eInfo.clientX - that.$elem.offsetLeft
+                var diffY        = eInfo.clientY - that.$elem.offsetTop
+                var pDiffX       = $parent.offsetLeft || 0
+                var pDiffY       = $parent.offsetTop || 0
+                var windowWidth  = document.documentElement.clientWidth
+                var windowHeight = document.documentElement.clientHeight
+                var elemWidth    = that.$elem.offsetWidth
+                var elemHeight   = that.$elem.offsetHeight
+                var transition   = getComputedStyle(that.$elem).transition
+                var zIndex       = getComputedStyle(that.$elem).zIndex
 
-                that.watcher.trigger('start', e)
-
+                that.watcher.trigger('start', that.$elem)
                 document.addEventListener(EVENTS[1], move)
                 function move(e) {
                     var eInfo = that._getEventInfo(e)
+                    var left  = eInfo.clientX - diffX
+                    var top   = eInfo.clientY - diffY
 
-                    that.$elem.style.position = 'absolute'
-                    that.$elem.style.left     = eInfo.clientX - diffX + 'px'
-                    that.$elem.style.top      = eInfo.clientY - diffY + 'px'
-                    $info.style.display       = 'block'
+                    if (left + pDiffX < 0) left = left - (left + pDiffX)
+                    if (top < 0) top = top - (top + pDiffY)
+                    if (left + pDiffX + elemWidth > windowWidth) left = windowWidth - (pDiffX + elemWidth)
+                    if (top + pDiffY + elemHeight > windowHeight) top = windowHeight - (pDiffY + elemHeight)
 
-                    that.watcher.trigger('move', e)
+                    that.$elem.style.position   = 'absolute'
+                    that.$elem.style.transition = 'initinal'
+                    that.$elem.style.left       = left + 'px'
+                    that.$elem.style.top        = top + 'px'
+                    that.$elem.style.zIndex     = 19911125
+
+                    that.watcher.trigger('move', that.$elem)
                 }
 
                 document.addEventListener(EVENTS[2], end)
                 function end(e) {
                     document.removeEventListener(EVENTS[1], move)
                     document.removeEventListener(EVENTS[2], end)
+                    that.$elem.style.transition = transition
+                    that.$elem.style.zIndex     = zIndex
 
-                    that.watcher.trigger('end', e)
+                    that.watcher.trigger('end', that.$elem)
                 }
             })
         },
