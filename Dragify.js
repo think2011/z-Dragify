@@ -92,7 +92,7 @@
                     var top   = eInfo.clientY - diffY
 
                     if (left + pDiffX < 0) left = left - (left + pDiffX)
-                    if (top < 0) top = top - (top + pDiffY)
+                    if (top + pDiffY < 0) top = top - (top + pDiffY)
                     if (left + pDiffX + elemWidth > windowWidth) left = windowWidth - (pDiffX + elemWidth)
                     if (top + pDiffY + elemHeight > windowHeight) top = windowHeight - (pDiffY + elemHeight)
 
