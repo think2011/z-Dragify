@@ -80,7 +80,8 @@
                 var windowHeight = document.documentElement.clientHeight
                 var elemWidth    = that.$elem.offsetWidth
                 var elemHeight   = that.$elem.offsetHeight
-                var transition   = getComputedStyle(that.$elem).transition
+                var style        = getComputedStyle(that.$elem)
+                var transition   = style['transition'] || style['-webkit-transition'] || style['-moz-transition']
                 var zIndex       = getComputedStyle(that.$elem).zIndex
 
                 that.watcher.trigger('start', that.$elem)
@@ -95,11 +96,11 @@
                     if (left + pDiffX + elemWidth > windowWidth) left = windowWidth - (pDiffX + elemWidth)
                     if (top + pDiffY + elemHeight > windowHeight) top = windowHeight - (pDiffY + elemHeight)
 
-                    that.$elem.style.position   = 'absolute'
-                    that.$elem.style.transition = 'initinal'
-                    that.$elem.style.left       = left + 'px'
-                    that.$elem.style.top        = top + 'px'
-                    that.$elem.style.zIndex     = 19911125
+                    that.$elem.style.position      = 'absolute'
+                    that.$elem.style['transition'] = that.$elem.style['-webkit-transition'] = that.$elem.style['-moz-transition'] = 'unset'
+                    that.$elem.style.left   = left + 'px'
+                    that.$elem.style.top    = top + 'px'
+                    that.$elem.style.zIndex = 19911125
 
                     that.watcher.trigger('move', that.$elem)
                 }
@@ -108,8 +109,8 @@
                 function end(e) {
                     document.removeEventListener(EVENTS[1], move)
                     document.removeEventListener(EVENTS[2], end)
-                    that.$elem.style.transition = transition
-                    that.$elem.style.zIndex     = zIndex
+                    that.$elem.style['transition'] = that.$elem.style['-webkit-transition'] = that.$elem.style['-moz-transition'] = transition
+                    that.$elem.style.zIndex = zIndex
 
                     that.watcher.trigger('end', that.$elem)
                 }
