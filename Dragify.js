@@ -57,9 +57,10 @@
      * 让元素可拖动
      * @param elem 拖动元素
      */
-    function Class(elem) {
+    function Class(elem, option) {
         this.$elem   = elem
-        this.watcher = new Watcher()
+        this.watcher = new Watcher();
+        this.option = option||{};
         this.init()
     }
 
@@ -68,8 +69,15 @@
 
         init: function () {
             var that = this
-
+            var target = this.option.target;
+            that._dragable = false;
             that.$elem.addEventListener(EVENTS[0], function (e) {
+                if(that.isChildren(e.target,target)){
+                    that._dragable = true;
+                }else{
+                    that._dragable = false;
+                    return;
+                }
                 var eInfo        = that._getEventInfo(e)
                 var $parent      = that.$elem.offsetParent
                 var diffX        = eInfo.clientX - that.$elem.offsetLeft
@@ -84,12 +92,14 @@
                 var transition   = style['transition'] || style['-webkit-transition'] || style['-moz-transition']
                 var zIndex       = getComputedStyle(that.$elem).zIndex
 
-                that.watcher.trigger('start', that.$elem)
+                that.watcher.trigger('start',e, that.$elem)
                 document.addEventListener(EVENTS[1], move)
                 function move(e) {
+                    if(!that._dragable){return}
+
                     var eInfo = that._getEventInfo(e)
-                    var left  = eInfo.clientX - diffX
-                    var top   = eInfo.clientY - diffY
+                    var left  = eInfo.clientX - diffX;
+                    var top   = eInfo.clientY - diffY;
 
                     if (left + pDiffX < 0) left = left - (left + pDiffX)
                     if (top + pDiffY < 0) top = top - (top + pDiffY)
@@ -102,21 +112,30 @@
                     that.$elem.style.top    = top + 'px'
                     that.$elem.style.zIndex = 19911125
 
-                    that.watcher.trigger('move', that.$elem)
+                    that.watcher.trigger('move', e, that.$elem);
                 }
 
                 document.addEventListener(EVENTS[2], end)
                 function end(e) {
+                    if(!that._dragable){return}
                     document.removeEventListener(EVENTS[1], move)
                     document.removeEventListener(EVENTS[2], end)
                     that.$elem.style['transition'] = that.$elem.style['-webkit-transition'] = that.$elem.style['-moz-transition'] = transition
                     that.$elem.style.zIndex = zIndex
 
-                    that.watcher.trigger('end', that.$elem)
+                    that.watcher.trigger('end', e,that.$elem)
                 }
             })
         },
-
+        isChildren(element, parent){
+            let cur = element;
+            for(;cur.parentNode;cur=cur.parentNode){
+                if(cur === parent){
+                    return true;
+                }
+            }
+            return false;
+        },
         on: function () {
             this.watcher.on.apply(this.watcher, arguments)
 
@@ -138,6 +157,6 @@
     var EVENTS = Class.isTouch()
         ? ["touchstart", "touchmove", "touchend"]
         : ["mousedown", "mousemove", "mouseup"]
-
+        
     return Class
 }))
