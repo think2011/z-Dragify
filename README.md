@@ -1,7 +1,9 @@
 z-Dragify
 
 ```js
-    new Dragify(document.querySelector('#box'))
+    new Dragify(document.querySelector('#box'),{
+                target: document.querySelector("#box-title")
+            })
             .on('start', function () {
                 console.log('s')
             })
@@ -11,4 +13,7 @@ z-Dragify
             .on('end', function () {
                 console.log('e')
             })
+    new Dragify("#box",{
+        target: "#box-title"
+    })
 ```
