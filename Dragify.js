@@ -82,6 +82,7 @@
                 var elemHeight   = that.$elem.offsetHeight
                 var zIndex       = getComputedStyle(that.$elem).zIndex
 
+                that.$elem.classList.add('drag-start')
                 that.watcher.trigger('start', that.$elem)
                 document.addEventListener(EVENTS[1], move)
                 function move(e) {
@@ -99,6 +100,7 @@
                     that.$elem.style.top      = top + 'px'
                     that.$elem.style.zIndex   = 19911125
 
+                    that.$elem.classList.add('drag-move')
                     that.watcher.trigger('move', that.$elem)
                 }
 
@@ -108,6 +110,8 @@
                     document.removeEventListener(EVENTS[2], end)
                     that.$elem.style.zIndex = zIndex
 
+                    that.$elem.classList.remove('drag-start')
+                    that.$elem.classList.remove('drag-move')
                     that.watcher.trigger('end', that.$elem)
                 }
             })
