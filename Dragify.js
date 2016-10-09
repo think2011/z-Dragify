@@ -61,21 +61,33 @@
         this.$elem   = elem
         this.watcher = new Watcher();
         this.option = option||{};
-        this.init()
+        this._data={};
+        this.checkOption();
+        this.init();
     }
 
     Class.prototype = {
         constructor: Class,
-
+        checkOption(){
+            var that = this;
+            if(typeof that.$elem === 'string'){
+                that.$elem = document.querySelector(that.$elem);
+            }
+            if(that.option.target && typeof that.option.target === 'string'){
+                that._data.target = document.querySelector(that.option.target);
+            }else{
+                that._data.target = that.option.target;
+            }
+        },
         init: function () {
             var that = this
-            var target = this.option.target;
-            that._dragable = false;
+            var target = this._data.target;
+            that._data.dragable = false;
             that.$elem.addEventListener(EVENTS[0], function (e) {
                 if(that.isChildren(e.target,target)){
-                    that._dragable = true;
+                    that._data.dragable = true;
                 }else{
-                    that._dragable = false;
+                    that._data.dragable = false;
                     return;
                 }
                 var eInfo        = that._getEventInfo(e)
@@ -95,7 +107,7 @@
                 that.watcher.trigger('start',e, that.$elem)
                 document.addEventListener(EVENTS[1], move)
                 function move(e) {
-                    if(!that._dragable){return}
+                    if(!that._data.dragable){return}
 
                     var eInfo = that._getEventInfo(e)
                     var left  = eInfo.clientX - diffX;
@@ -117,7 +129,7 @@
 
                 document.addEventListener(EVENTS[2], end)
                 function end(e) {
-                    if(!that._dragable){return}
+                    if(!that._data.dragable){return}
                     document.removeEventListener(EVENTS[1], move)
                     document.removeEventListener(EVENTS[2], end)
                     that.$elem.style['transition'] = that.$elem.style['-webkit-transition'] = that.$elem.style['-moz-transition'] = transition
@@ -127,8 +139,9 @@
                 }
             })
         },
+        
         isChildren(element, parent){
-            let cur = element;
+            var cur = element;
             for(;cur.parentNode;cur=cur.parentNode){
                 if(cur === parent){
                     return true;
@@ -157,6 +170,5 @@
     var EVENTS = Class.isTouch()
         ? ["touchstart", "touchmove", "touchend"]
         : ["mousedown", "mousemove", "mouseup"]
-        
     return Class
 }))

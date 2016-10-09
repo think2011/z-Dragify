@@ -13,4 +13,7 @@ z-Dragify
             .on('end', function () {
                 console.log('e')
             })
+    new Dragify("#box",{
+        target: "#box-title"
+    })
 ```
