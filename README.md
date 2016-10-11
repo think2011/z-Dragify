@@ -1,7 +1,7 @@
 z-Dragify
 
 ```js
-    new Dragify(document.querySelector('#box'))
+    let dragify = new Dragify(document.querySelector('#box'))
             .on('start', function () {
                 console.log('s')
             })
@@ -9,6 +9,8 @@ z-Dragify
                 console.log('m')
             })
             .on('end', function () {
+                // dragify.emit('disabled')
+                // dragify.emit('enabled')
                 console.log('e')
             })
 ```

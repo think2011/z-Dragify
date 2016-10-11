@@ -131,13 +131,14 @@
 
                     document.addEventListener(EVENTS[2], end)
                     function end(e) {
-                        document.removeEventListener(EVENTS[1], move)
-                        document.removeEventListener(EVENTS[2], end)
-                        that.$elem.style.zIndex = zIndex
+                        that.emit('end', that.$elem)
 
+                        that.$elem.style.zIndex = zIndex
                         that.$elem.classList.remove('drag-start')
                         that.$elem.classList.remove('drag-move')
-                        that.emit('end', that.$elem)
+
+                        document.removeEventListener(EVENTS[1], move)
+                        document.removeEventListener(EVENTS[2], end)
                     }
                 })
             },
